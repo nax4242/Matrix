@@ -1,6 +1,9 @@
 #include "pch.h"
 #include "MathVector.h"
 #include <stdexcept>
+#include "parameters.h"
+
+#ifdef MATHVECTOR_TESTS
 
 TEST(MathVectorTest, ArrayConstructor) {
     int arr[] = { 10, 20, 30 };
@@ -114,3 +117,5 @@ TEST(MathVectorTest, CannotModifySize) {
     MathVector<int> v{ 1, 2, 3 };
     EXPECT_EQ(v.size(), 3);
 }
+
+#endif
