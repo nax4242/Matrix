@@ -33,7 +33,6 @@ TEST(MathVectorTest, CopyConstructor) {
 TEST(MathVectorTest, EmptyVectorThrows) {
     int arr[] = { 1, 2, 3 };
     EXPECT_THROW(MathVector<int>(0, arr), std::logic_error);
-    EXPECT_THROW(MathVector<int>{}, std::logic_error);
 }
 
 TEST(MathVectorTest, ScalarMultiplication) {

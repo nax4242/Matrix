@@ -11,7 +11,7 @@ public:
 	using Vector<T>::is_empty;
 	using Vector<T>::is_full;
 
-	MathVector(size_t size = 0, T* data = nullptr);
+	MathVector(size_t size = 1, T* data = nullptr);
 	MathVector(std::initializer_list<T> data);
 	MathVector(const MathVector<T>& other);
 
