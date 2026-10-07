@@ -5,6 +5,84 @@
 
 #ifdef VECTOR_TESTS
 
+TEST(VectorTest, ShrinkToFitReducesCapacity) {
+    Vector<int> v;
+
+    for (int i = 0; i < 16; ++i) {
+        v.push_back(i);
+    }
+
+    EXPECT_EQ(v.size(), 16);
+    EXPECT_EQ(v.capacity(), 30);
+
+    v.shrink_to_fit();
+
+    EXPECT_EQ(v.size(), 16);
+    EXPECT_EQ(v.capacity(), 16);
+}
+
+TEST(VectorTest, ShrinkToFitPreservesElements) {
+    Vector<int> v = { 1, 2, 3, 4, 5 };
+
+    v.push_back(6);
+    v.push_back(7);
+
+    v.shrink_to_fit();
+
+    EXPECT_EQ(v.capacity(), v.size());
+
+    for (size_t i = 0; i < v.size(); ++i) {
+        EXPECT_EQ(v[i], static_cast<int>(i + 1));
+    }
+}
+
+TEST(VectorTest, ShrinkToFitWorksWithCircularBuffer) {
+    Vector<int> v;
+
+    for (int i = 0; i < 20; ++i) {
+        v.push_back(i);
+    }
+
+    v.pop_front(5);
+
+    EXPECT_EQ(v.size(), 15);
+
+    v.shrink_to_fit();
+
+    EXPECT_EQ(v.size(), 15);
+    EXPECT_EQ(v.capacity(), 15);
+
+    for (size_t i = 0; i < v.size(); ++i) {
+        EXPECT_EQ(v[i], static_cast<int>(i + 5));
+    }
+}
+
+TEST(VectorTest, ShrinkToFitDoesNothingWhenCapacityEqualsSize) {
+    Vector<int> v;
+
+    for (int i = 0; i < 15; ++i) {
+        v.push_back(i);
+    }
+
+    EXPECT_EQ(v.size(), 15);
+    EXPECT_EQ(v.capacity(), 15);
+
+    v.shrink_to_fit();
+
+    EXPECT_EQ(v.size(), 15);
+    EXPECT_EQ(v.capacity(), 15);
+
+    for (size_t i = 0; i < v.size(); ++i) {
+        EXPECT_EQ(v[i], static_cast<int>(i));
+    }
+}
+
+TEST(VectorTest, ShrinkToFitOnEmptyVectorThrows) {
+    Vector<int> v;
+
+    EXPECT_THROW(v.shrink_to_fit(), std::logic_error);
+}
+
 TEST(ClassVector, can_create_with_default_constructor) {
     Vector<double> v1;
 

@@ -19,10 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="MathVector.cpp" />
     <ClCompile Include="memdata.cpp" />
     <ClCompile Include="vector.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MathVector.h" />
     <ClInclude Include="memdata.h" />
     <ClInclude Include="vector.h" />
   </ItemGroup>

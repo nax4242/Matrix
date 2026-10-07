@@ -57,35 +57,7 @@ public:
     void shuffle() noexcept;
     void selection_sort() noexcept;
 
-    //template <typename T>
-    //class Iterator {
-    //    T* ptr;
-    //    
-    //public:
-    //    Iterator();
-    //    Iterator(T*);
-    //    Iterator(const Iterator&);
-
-    //    Iterator& operator=(const Iterator&) noexcept;
-    //    
-    //    bool operator==(const Iterator&) const noexcept;
-    //    bool operator!=(const Iterator&) const noexcept;
-
-    //    Iterator& operator++();
-    //    Iterator operator++(int);
-
-    //    Iterator& operator--();
-    //    Iterator operator--(int);
-
-    //    T& operator*();
-    //    T& operator*() const;
-    //};
-
-    //Iterator<T> begin() noexcept;
-    //Iterator<T> end() noexcept;
-
-    //typedef Iterator<Type> iterator;
-    //typedef Iterator<Type> const_iterator;
+    void shrink_to_fit();
 
 private:
     void push_elements_to_insert(size_t, DirectionToShift, size_t = 1);
@@ -93,6 +65,31 @@ private:
     void reset_memory(size_t);
     void clear();
 };
+
+template <typename T>
+void Vector<T>::shrink_to_fit() {
+    if (_mem._size == 0) {
+        throw std::logic_error("empty vector");
+    }
+
+    if (_mem._size == _mem._capacity) {
+        return;
+    }
+
+    T* new_data = new T[_mem._size];
+
+    for (size_t i = 0; i < _mem._size; ++i) {
+        new_data[i] = (*this)[i];
+    }
+
+    delete[] _mem._data;
+
+    _mem._data = new_data;
+    _mem._capacity = _mem._size;
+
+    _front = 0;
+    _back = _mem._size - 1;
+}
 
 template <typename T>
 inline size_t Vector<T>::size() const noexcept {
