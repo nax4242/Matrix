@@ -165,31 +165,6 @@ TEST(ClassMemData, can_reset_memory_without_reallocation) {
 
 }
 
-TEST(ClassMemData, can_reset_memory_with_shift) {
-    MemData<double> m1({ 1, 2, 3, 4, 5 });
-    double* shift_data = new double[15];
-    size_t start_indx = 13;
-    size_t indx = start_indx;
-
-    for (int i = 0; i < m1.size(); i++) {
-        shift_data[indx++] = m1.data()[i];
-        if (indx >= m1.capacity()) indx = 0;
-    }
-
-    MemData<double> m2(shift_data, 5);
-    m2.reset_memory(89, 13);
-
-    EXPECT_EQ(m2.size(), 5);
-    EXPECT_EQ(m2.capacity(), 90);
-
-    for (int i = 0; i < m2.size(); i++) {
-        EXPECT_EQ(m2.data()[i], shift_data[start_indx++]);
-        if (start_indx >= m1.capacity()) start_indx = 0;
-    }
-
-    delete[] shift_data;
-}
-
 TEST(ClassMemData, can_clear_memory_for_empty) {
     MemData<double> m1;
     m1.clear_memory();

@@ -84,8 +84,8 @@ MemData<T>::MemData(std::initializer_list<T> data) : _size(data.size()), _capaci
 template <typename T>
 MemData<T>::MemData(T* data, size_t size) : _size(size), _capacity(calculate_capacity(_size)), _data(new T[_capacity]) {
 
-	for (size_t i = 0; i < _capacity; i++) {
-		_data[i] = data[i];
+	for (size_t i = 0; i < _size; i++) {
+		_data[i] = data ? data[i] : T();
 	}
 
 }
