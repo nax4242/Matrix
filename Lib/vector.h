@@ -146,6 +146,7 @@ Vector<T>::Vector(T* data, size_t size) : _mem(MemData<T>(data, size)), _front(0
 
 template <typename T>
 Vector<T>::Vector(const Vector<T>& other) : _mem(other._mem._size), _front(0), _back(other._mem._size - 1) {
+    _mem._size = other._mem._size;
 
     for (size_t i = 0; i < other._mem._size; i++) {
         size_t other_index = (other._front + i) % other._mem._capacity;
