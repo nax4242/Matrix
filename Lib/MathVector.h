@@ -55,12 +55,7 @@ MathVector<T>::MathVector(const MathVector<T>& other) : Vector<T>(other) {
 template <typename T>
 MathVector<T> MathVector<T>::operator*(double val) const noexcept {
 	MathVector<T> result(*this);
-
-	for (size_t i = 0; i < result.size(); ++i) {
-		result[i] *= val;
-	}
-
-	return result;
+	return result *= val;
 }
 
 template <typename T>
@@ -74,17 +69,8 @@ MathVector<T>& MathVector<T>::operator*=(double val) noexcept {
 
 template <typename T>
 MathVector<T> MathVector<T>::operator+(const MathVector<T>& other) const {
-	if (this->size() != other.size()) {
-		throw std::invalid_argument("Vectors must be of the same size for addition.");
-	}
-
 	MathVector<T> result(*this);
-
-	for (size_t i = 0; i < result.size(); ++i) {
-		result[i] += other[i];
-	}
-
-	return result;
+	return result += other;
 }
 
 template <typename T>
@@ -102,17 +88,8 @@ MathVector<T>& MathVector<T>::operator+=(const MathVector<T>& other) {
 
 template <typename T>
 MathVector<T> MathVector<T>::operator-(const MathVector<T>& other) const {
-	if (this->size() != other.size()) {
-		throw std::invalid_argument("Vectors must be of the same size for subtraction.");
-	}
-
 	MathVector<T> result(*this);
-
-	for (size_t i = 0; i < result.size(); ++i) {
-		result[i] -= other[i];
-	}
-
-	return result;
+	return result -= other;;
 }
 
 template <typename T>	

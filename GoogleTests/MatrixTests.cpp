@@ -1,6 +1,9 @@
 #include "pch.h"
+#include "parameters.h"
 #include "Matrix.h"
 #include <stdexcept>
+
+#ifdef MATRIX_TESTS
 
 TEST(MatrixTest, SizeConstructor) {
     Matrix<int> m(3, 4);
@@ -144,3 +147,5 @@ TEST(MatrixTest, SizeMismatchOnSubtraction) {
     Matrix<int> m2{ {1, 2, 3}, {4, 5, 6}, {7, 8, 9} };
     EXPECT_THROW(m1 - m2, std::invalid_argument);
 }
+
+#endif

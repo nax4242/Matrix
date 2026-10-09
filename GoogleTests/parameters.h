@@ -5,3 +5,5 @@
 //#define VECTOR_TESTS
 
 #define MATHVECTOR_TESTS
+
+#define MATRIX_TESTS
