@@ -12,6 +12,71 @@ class Vector {
     size_t _back;
 
 public:
+    template <typename Type>
+    class Iterator {
+        Vector<T>* _vec;
+        size_t _pos;
+    public:
+        Iterator() : _vec(nullptr), _pos(0) {}
+        Iterator(Vector<T>* vec, size_t pos) : _vec(vec), _pos(pos) {}
+
+        Iterator& operator++() noexcept{
+            _pos++;
+            return *this;
+        }
+        Iterator  operator++(int) noexcept {
+            Iterator temp = *this;
+            _pos++;
+            return temp;
+        }
+
+        Iterator& operator--() noexcept {
+            _pos--;
+            return *this;
+        }
+        Iterator  operator--(int) noexcept {
+            Iterator temp = *this;
+            _pos--;
+            return temp;
+        }
+
+        Iterator& operator+=(size_t n) noexcept {
+            _pos += n;
+            return *this;
+        }
+        Iterator& operator-=(size_t n) noexcept {
+            _pos -= n;
+            return *this;
+        }
+
+        Iterator operator+(size_t n) const noexcept {
+            Iterator tmp(*this);
+            return tmp += n;
+        }
+        Iterator operator-(size_t n) const noexcept {
+            Iterator tmp(*this);
+            return tmp -= n;
+        }
+
+        Type& operator*() { return (*_vec)[_pos]; }
+        const Type& operator*() const { return (*_vec)[_pos]; }
+
+        bool operator==(const Iterator& other) const noexcept { return _vec == other._vec && _pos == other._pos; }
+        bool operator!=(const Iterator& other) const noexcept { return !(*this == other); }
+    };
+
+    typedef Iterator<T> iterator;
+    typedef Iterator<const T> const_iterator;
+
+    iterator begin() noexcept { return iterator(this, 0); }
+    iterator end() noexcept { return iterator(this, _mem._size); }
+
+    const_iterator begin() const noexcept { return const_iterator(const_cast<Vector<T>*>(this), 0); }
+    const_iterator end() const noexcept { return const_iterator(const_cast<Vector<T>*>(this), _mem._size); }
+
+    const_iterator cbegin() const noexcept { return begin(); }
+    const_iterator cend() const noexcept { return end(); }
+
     Vector(size_t size = 0);
     Vector(std::initializer_list<T>);
     Vector(T*, size_t);

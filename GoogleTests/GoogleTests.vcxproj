@@ -101,6 +101,7 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="IteratorTests.cpp" />
     <ClCompile Include="MathVectorTests.cpp" />
     <ClCompile Include="MatrixTests.cpp" />
     <ClCompile Include="MemDataTests.cpp" />
