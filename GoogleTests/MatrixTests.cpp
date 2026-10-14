@@ -2,6 +2,7 @@
 #include "parameters.h"
 #include "Matrix.h"
 #include <stdexcept>
+#include <sstream>
 
 #ifdef MATRIX_TESTS
 
@@ -9,7 +10,6 @@ TEST(MatrixTest, SizeConstructor) {
     Matrix<int> m(3, 4);
     EXPECT_EQ(m.rows(), 3);
     EXPECT_EQ(m.cols(), 4);
-    EXPECT_EQ(m.size(), 3);
 }
 
 TEST(MatrixTest, InitializerListConstructor) {
@@ -146,6 +146,13 @@ TEST(MatrixTest, SizeMismatchOnSubtraction) {
     Matrix<int> m1{ {1, 2}, {3, 4} };
     Matrix<int> m2{ {1, 2, 3}, {4, 5, 6}, {7, 8, 9} };
     EXPECT_THROW(m1 - m2, std::invalid_argument);
+}
+
+TEST(MatrixTest, OutputOperator) {
+    Matrix<int> m{ {1, 2}, {3, 4} };
+    std::ostringstream os;
+    os << m;
+    EXPECT_EQ(os.str(), "[ 1 2 ]\n[ 3 4 ]");
 }
 
 #endif

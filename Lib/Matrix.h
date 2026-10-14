@@ -17,7 +17,32 @@ public:
     using MathVector<MathVector<T>>::operator*;
     Matrix<T> operator*(const Matrix<T>& other) const;
     Matrix<T> transpose() const;
+
+    template <typename T>
+    friend std::ostream& operator<<(std::ostream& os, const Matrix<T>& m);
 };
+
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const Matrix<T>& m) {
+    for (size_t i = 0; i < m.rows(); i++) {
+        os << "[ ";
+
+        for (size_t j = 0; j < m.cols(); j++) {
+            if (j < m[i].start_index()) {
+                os << T() << ' ';
+            }
+
+            else {
+                os << m[i][j] << ' ';
+            }
+        }
+
+        os << "]";
+
+        if (i + 1 < m.rows()) os << '\n';
+    }
+    return os;
+}
 
 template <typename T>
 Matrix<T>::Matrix(size_t rows, size_t cols) : MathVector<MathVector<T>>(rows) {
