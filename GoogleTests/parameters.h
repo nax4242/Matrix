@@ -6,4 +6,4 @@
 
 #define MATHVECTOR_TESTS
 
-//#define MATRIX_TESTS
+#define MATRIX_TESTS

@@ -19,7 +19,7 @@ class MemData {
 
 public:
 
-	MemData(size_t size = 0);
+	MemData(size_t = 0);
 	MemData(std::initializer_list<T>);
 	MemData(T*, size_t);
 	MemData(const MemData&);
@@ -34,7 +34,7 @@ public:
 	inline const T* const data() const noexcept;
 
 	void set_memory(size_t) noexcept;
-	void reset_memory(size_t size, size_t start_index = 0) noexcept;
+	void reset_memory(size_t, size_t = 0) noexcept;
 	void clear_memory() noexcept;
 
 	MemData& operator=(const MemData&) noexcept;
