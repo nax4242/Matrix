@@ -12,7 +12,6 @@ TEST(MathVectorTest, ArrayConstructor) {
     EXPECT_EQ(v[0], 10);
     EXPECT_EQ(v[1], 20);
     EXPECT_EQ(v[2], 30);
-    EXPECT_EQ(v.size(), v.capacity());
     EXPECT_EQ(v.start_index(), 0u);
 }
 
@@ -27,7 +26,6 @@ TEST(MathVectorTest, InitializerListConstructor) {
     EXPECT_EQ(v.size(), 3u);
     EXPECT_DOUBLE_EQ(v[0], 1.5);
     EXPECT_DOUBLE_EQ(v[2], 3.5);
-    EXPECT_EQ(v.size(), v.capacity());
     EXPECT_EQ(v.start_index(), 0u);
 }
 
@@ -36,7 +34,6 @@ TEST(MathVectorTest, CopyConstructor) {
     MathVector<int> v2(v1);
     EXPECT_EQ(v2.size(), 3u);
     EXPECT_EQ(v2[1], 2);
-    EXPECT_EQ(v2.size(), v2.capacity());
 }
 
 TEST(MathVectorTest, CopyIsIndependent) {
@@ -81,7 +78,6 @@ TEST(MathVectorTest, StartIndexSizeIsStoredCount) {
     MathVector<int> v(3, nullptr, 2);
     EXPECT_EQ(v.size(), 3u);
     EXPECT_EQ(v.start_index(), 2u);
-    EXPECT_EQ(v.size(), v.capacity());
 }
 
 TEST(MathVectorTest, StartIndexShiftsIndices) {

@@ -8,17 +8,16 @@ class MathVector : protected Vector<T> {
 
 public:
 	using Vector<T>::size;
-	using Vector<T>::capacity;
 	using Vector<T>::is_empty;
 	using Vector<T>::is_full;
+
+	inline size_t start_index() const noexcept;
 
 	MathVector(size_t size = 1, T* data = nullptr, size_t start_index = 0);
 	MathVector(std::initializer_list<T> data);
 	MathVector(const MathVector<T>& other);
 
 	~MathVector() {}
-
-	inline size_t start_index() const noexcept;
 
 	T& operator[](size_t index);
 	const T& operator[](size_t index) const;
