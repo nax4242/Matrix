@@ -1,7 +1,9 @@
-#include "vector.h"
 #include <iostream>
-#include <vector>
+#include "TriangleMatrix.h"
 
 int main() {
+    TriangleMatrix<int> tr;
+    MathVector<int> mv;
+    Matrix<int> m(5, 6);
     return 0;
 }
