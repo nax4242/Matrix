@@ -8,6 +8,14 @@ public:
     TriangleMatrix(std::initializer_list<std::initializer_list<T>> data);
     TriangleMatrix(const MathVector<MathVector<T>>& vec);
 
+    TriangleMatrix(const TriangleMatrix<T>&) = default;
+    TriangleMatrix(TriangleMatrix<T>&&) noexcept = default;
+
+    ~TriangleMatrix() = default;
+
+    TriangleMatrix<T>& operator=(const TriangleMatrix<T>&) = default;
+    TriangleMatrix<T>& operator=(TriangleMatrix<T>&&) noexcept = default;
+
     inline size_t size() const noexcept;
 };
 

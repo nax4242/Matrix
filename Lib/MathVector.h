@@ -16,8 +16,12 @@ public:
 	MathVector(size_t size = 1, T* data = nullptr, size_t start_index = 0);
 	MathVector(std::initializer_list<T> data);
 	MathVector(const MathVector<T>& other);
+	MathVector(MathVector<T>&& other) noexcept;
 
-	~MathVector() {}
+	~MathVector() = default;
+
+	MathVector<T>& operator=(const MathVector<T>& other);
+	MathVector<T>& operator=(MathVector<T>&& other) noexcept;
 
 	T& operator[](size_t index);
 	const T& operator[](size_t index) const;
@@ -33,8 +37,34 @@ public:
 
 	double operator*(const MathVector<T>& other) const;
 
+	template <typename T>
+	friend std::ostream& operator<<(std::ostream& os, const MathVector<T>& v);
+
+	template <typename T>
+	friend std::istream& operator>>(std::istream& is, MathVector<T>& v);
+
 	inline size_t size() const noexcept;
 };
+
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const MathVector<T>& v) {
+	os << "[ ";
+
+	for (size_t i = 0; i < v.start_index() + v.size(); i++) {
+		os << v[i] << ' ';
+	}
+
+	return os << ']';
+}
+
+template <typename T>
+std::istream& operator>>(std::istream& is, MathVector<T>& v) {
+	for (size_t i = v.start_index(); i < v.start_index() + v.size(); i++) {
+		if (!(is >> v[i])) return is;
+	}
+
+	return is;
+}
 
 template <typename T>
 inline size_t MathVector<T>::start_index() const noexcept {
@@ -59,6 +89,35 @@ MathVector<T>::MathVector(std::initializer_list<T> data) : Vector<T>(data), _sta
 template <typename T>
 MathVector<T>::MathVector(const MathVector<T>& other) : Vector<T>(other), _start_index(other._start_index) {
 	Vector<T>::shrink_to_fit();
+}
+
+template <typename T>
+MathVector<T>::MathVector(MathVector<T>&& other) noexcept : Vector<T>(std::move(static_cast<Vector<T>&>(other))), _start_index(other._start_index) {
+	other._start_index = 0;
+}
+
+template <typename T>
+MathVector<T>& MathVector<T>::operator=(const MathVector<T>& other) {
+	if (this != &other) {
+		Vector<T>::operator=(other);
+
+		_start_index = other._start_index;
+		Vector<T>::shrink_to_fit();
+	}
+
+	return *this;
+}
+
+template <typename T>
+MathVector<T>& MathVector<T>::operator=(MathVector<T>&& other) noexcept {
+	if (this != &other) {
+		Vector<T>::operator=(std::move(static_cast<Vector<T>&>(other)));
+
+		_start_index = other._start_index;
+		other._start_index = 0;
+	}
+
+	return *this;
 }
 
 template <typename T>

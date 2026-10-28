@@ -295,4 +295,139 @@ TEST(MathVectorTest, FailedOperationDoesNotModifyVector) {
     EXPECT_EQ(v1[1], 2);
 }
 
+TEST(MathVectorTest, CopyAssignmentIsIndependent) {
+    MathVector<int> src{ 1, 2, 3 };
+    MathVector<int> dst(2);
+    dst = src;
+    dst[0] = 100;
+    EXPECT_EQ(src[0], 1);
+    EXPECT_EQ(dst[0], 100);
+    EXPECT_EQ(dst.size(), 3u);
+}
+
+TEST(MathVectorTest, CopyAssignmentSelfAssignment) {
+    int arr[] = { 1, 2, 3 };
+    MathVector<int> v(3, arr, 2);
+    MathVector<int>& ref = v;
+    v = ref;
+    EXPECT_EQ(v.size(), 3u);
+    EXPECT_EQ(v.start_index(), 2u);
+    EXPECT_EQ(v[2], 1);
+    EXPECT_EQ(v[4], 3);
+}
+
+TEST(MathVectorTest, CopyAssignmentChain) {
+    MathVector<int> a{ 1, 2 };
+    MathVector<int> b(1), c(1);
+    c = b = a;
+    EXPECT_EQ(b.size(), 2u);
+    EXPECT_EQ(c.size(), 2u);
+    EXPECT_EQ(c[1], 2);
+}
+
+TEST(MathVectorTest, MoveConstructorTransfersData) {
+    int arr[] = { 1, 2, 3 };
+    MathVector<int> src(3, arr, 2);
+    MathVector<int> dst(std::move(src));
+    EXPECT_EQ(dst.size(), 3u);
+    EXPECT_EQ(dst.start_index(), 2u);
+    EXPECT_EQ(dst[0], 0);
+    EXPECT_EQ(dst[2], 1);
+    EXPECT_EQ(dst[4], 3);
+    EXPECT_EQ(src.start_index(), 0u);
+}
+
+TEST(MathVectorTest, MoveAssignmentTransfersData) {
+    int arr[] = { 4, 5 };
+    MathVector<int> src(2, arr, 3);
+    MathVector<int> dst(5);
+    dst = std::move(src);
+    EXPECT_EQ(dst.size(), 2u);
+    EXPECT_EQ(dst.start_index(), 3u);
+    EXPECT_EQ(dst[3], 4);
+    EXPECT_EQ(dst[4], 5);
+    EXPECT_EQ(src.start_index(), 0u);
+}
+
+TEST(MathVectorTest, MoveAssignmentSelfAssignment) {
+    MathVector<int> v{ 1, 2, 3 };
+    MathVector<int>& ref = v;
+    v = std::move(ref);
+    EXPECT_EQ(v.size(), 3u);
+    EXPECT_EQ(v[2], 3);
+}
+
+TEST(MathVectorTest, MovedToVectorIsUsable) {
+    MathVector<int> src{ 1, 2, 3 };
+    MathVector<int> dst(std::move(src));
+    dst += MathVector<int>{ 1, 1, 1 };
+    EXPECT_EQ(dst[0], 2);
+    EXPECT_EQ(dst[2], 4);
+}
+
+TEST(MathVectorTest, OutputOperator) {
+    MathVector<int> v{ 1, 2, 3 };
+    std::ostringstream os;
+    os << v;
+    EXPECT_EQ(os.str(), "[ 1 2 3 ]");
+}
+
+TEST(MathVectorTest, OutputOperatorWithStartIndex) {
+    int arr[] = { 1, 2 };
+    MathVector<int> v(2, arr, 2);
+    std::ostringstream os;
+    os << v;
+    EXPECT_EQ(os.str(), "[ 0 0 1 2 ]");
+}
+
+TEST(MathVectorTest, InputOperator) {
+    MathVector<int> v(3);
+    std::istringstream is("7 8 9");
+    is >> v;
+    EXPECT_FALSE(is.fail());
+    EXPECT_EQ(v[0], 7);
+    EXPECT_EQ(v[1], 8);
+    EXPECT_EQ(v[2], 9);
+}
+
+TEST(MathVectorTest, InputOperatorReadsOnlyStoredElements) {
+    MathVector<int> v(3, nullptr, 2);
+    std::istringstream is("7 8 9 100");
+    is >> v;
+    EXPECT_EQ(v[0], 0);
+    EXPECT_EQ(v[1], 0);
+    EXPECT_EQ(v[2], 7);
+    EXPECT_EQ(v[3], 8);
+    EXPECT_EQ(v[4], 9);
+    int rest;
+    is >> rest;
+    EXPECT_EQ(rest, 100);
+}
+
+TEST(MathVectorTest, InputOperatorNotEnoughDataSetsFail) {
+    MathVector<int> v(3);
+    std::istringstream is("1 2");
+    is >> v;
+    EXPECT_TRUE(is.fail());
+    EXPECT_EQ(v[0], 1);
+    EXPECT_EQ(v[1], 2);
+}
+
+TEST(MathVectorTest, InputOperatorBadTokenSetsFail) {
+    MathVector<int> v(2);
+    std::istringstream is("1 abc");
+    is >> v;
+    EXPECT_TRUE(is.fail());
+}
+
+TEST(MathVectorTest, InputOperatorChained) {
+    MathVector<int> a(2), b(2);
+    std::istringstream is("1 2 3 4");
+    is >> a >> b;
+    EXPECT_EQ(a[1], 2);
+    EXPECT_EQ(b[0], 3);
+    EXPECT_EQ(b[1], 4);
+}
+
+
 #endif

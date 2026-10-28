@@ -4,18 +4,24 @@
 template <typename T>
 class Matrix : public MathVector<MathVector<T>> {
 public:
-    Matrix(size_t rows, size_t cols);
+    explicit Matrix(size_t rows = 1, size_t cols = 1);
     Matrix(std::initializer_list<std::initializer_list<T>> data);
-    Matrix(const Matrix<T>& other);
+
+    Matrix(const Matrix<T>&) = default;
+    Matrix(Matrix<T>&&) noexcept = default;
 
     Matrix(const MathVector<MathVector<T>>& vec);
-    ~Matrix() {}
+    ~Matrix() = default;
 
     inline size_t rows() const noexcept;
     inline size_t cols() const noexcept;
 
     using MathVector<MathVector<T>>::operator*;
+
+    Matrix<T>& operator=(const Matrix<T>& other) = default;
+    Matrix<T>& operator=(Matrix<T>&& other) noexcept = default;
     Matrix<T> operator*(const Matrix<T>& other) const;
+
     Matrix<T> transpose() const;
 
     template <typename T>
@@ -28,20 +34,44 @@ std::ostream& operator<<(std::ostream& os, const Matrix<T>& m) {
         os << "[ ";
 
         for (size_t j = 0; j < m.cols(); j++) {
-            if (j < m[i].start_index()) {
-                os << T() << ' ';
-            }
-
-            else {
-                os << m[i][j] << ' ';
-            }
+            if (j < m[i].start_index()) os << T() << ' ';
+            else os << m[i][j] << ' ';
         }
 
         os << "]";
 
         if (i + 1 < m.rows()) os << '\n';
     }
+
     return os;
+}
+
+template <typename T>
+std::istream& operator>>(std::istream& is, Matrix<T>& m) {
+    Matrix<T> tmp(m);
+
+    for (size_t i = 0; i < tmp.rows(); i++) {
+        const size_t start = tmp[i].start_index();
+        const size_t width = start + tmp[i].size();
+
+        for (size_t j = 0; j < width; j++) {
+            T value;
+
+            if (!(is >> value)) return is;
+
+            if (j < start) {
+                if (value != T()) {
+                    throw std::invalid_argument("Elements below the diagonal must be zero");
+                }
+            }
+            else {
+                tmp[i][j] = value;
+            }
+        }
+    }
+
+    m = std::move(tmp);
+    return is;
 }
 
 template <typename T>
@@ -65,9 +95,6 @@ Matrix<T>::Matrix(std::initializer_list<std::initializer_list<T>> data) : MathVe
         i++;
     }
 }
-
-template <typename T>
-Matrix<T>::Matrix(const Matrix<T>& other) : MathVector<MathVector<T>>(other) {}
 
 template <typename T>
 Matrix<T>::Matrix(const MathVector<MathVector<T>>& vec) : MathVector<MathVector<T>>(vec) {}

@@ -21,6 +21,18 @@ TEST(TriangleMatrix, SizeConstructorIsZeroFilled) {
             EXPECT_EQ(A[i][j], 0);
 }
 
+TEST(TriangleMatrix, DefaultConstructorIsOneByOne) {
+    TriangleMatrix<int> A;
+    EXPECT_EQ(A.size(), 1u);
+    EXPECT_EQ(A[0].size(), 1u);
+    EXPECT_EQ(A[0][0], 0);
+}
+
+TEST(TriangleMatrix, DefaultConstructedInContainer) {
+    std::vector<TriangleMatrix<int>> v(2);
+    EXPECT_EQ(v[0].size(), 1u);
+    EXPECT_EQ(v[1][0][0], 0);
+}
 TEST(TriangleMatrix, ZeroSizeThrows) {
     EXPECT_ANY_THROW(TriangleMatrix<int> A(0));
 }
@@ -141,3 +153,148 @@ TEST(MathVector, StartIndex) {
     EXPECT_EQ(v[1], 0);
     EXPECT_THROW(v[5], std::out_of_range);
 }
+
+TEST(TriangleMatrix, CopyConstructorKeepsTriangleShape) {
+    auto A = make5();
+    TriangleMatrix<int> B(A);
+    for (size_t i = 0; i < 5; ++i)
+        EXPECT_EQ(B[i].size(), 5 - i);
+    EXPECT_EQ(B[1][3], 5);
+}
+
+TEST(TriangleMatrix, CopyAssignment) {
+    auto A = make5();
+    TriangleMatrix<int> C(2);
+    C = A;
+    EXPECT_EQ(C.size(), 5u);
+    for (size_t i = 0; i < 5; ++i)
+        EXPECT_EQ(C[i].size(), 5 - i);
+    C[0][0] = 100;
+    EXPECT_EQ(A[0][0], 3);
+    EXPECT_EQ(C[4][1], 0);
+}
+
+TEST(TriangleMatrix, CopyAssignmentSelfAssignment) {
+    auto A = make5();
+    TriangleMatrix<int>& ref = A;
+    A = ref;
+    EXPECT_EQ(A.size(), 5u);
+    EXPECT_EQ(A[2][3], 5);
+}
+
+TEST(TriangleMatrix, MoveConstructor) {
+    auto A = make5();
+    TriangleMatrix<int> B(std::move(A));
+    EXPECT_EQ(B.size(), 5u);
+    for (size_t i = 0; i < 5; ++i)
+        EXPECT_EQ(B[i].size(), 5 - i);
+    EXPECT_EQ(B[0][2], 3);
+    EXPECT_EQ(B[4][4], 1);
+    EXPECT_EQ(B[3][0], 0);
+}
+
+TEST(TriangleMatrix, MoveAssignment) {
+    auto A = make5();
+    TriangleMatrix<int> C(2);
+    C = std::move(A);
+    EXPECT_EQ(C.size(), 5u);
+    EXPECT_EQ(C[1][3], 5);
+    EXPECT_EQ(C[4].size(), 1u);
+}
+
+TEST(TriangleMatrix, MovedToMatrixIsUsable) {
+    auto A = make5();
+    TriangleMatrix<int> B(std::move(A));
+    TriangleMatrix<int> S = B + B;
+    EXPECT_EQ(S[0][1], 8);
+    EXPECT_EQ(S[4][1], 0);
+}
+
+TEST(TriangleMatrix, OutputPrintsFullSquare) {
+    TriangleMatrix<int> A({ { 1, 2, 3 },{ 0, 4, 5 },{ 0, 0, 6 } });
+    std::ostringstream os;
+    os << A;
+    EXPECT_EQ(os.str(), "[ 1 2 3 ]\n[ 0 4 5 ]\n[ 0 0 6 ]");
+}
+
+TEST(TriangleMatrix, InputReadsFullSquare) {
+    TriangleMatrix<int> A(3);
+    std::istringstream is("1 2 3  0 4 5  0 0 6");
+    is >> A;
+    EXPECT_FALSE(is.fail());
+    EXPECT_EQ(A[0][0], 1);
+    EXPECT_EQ(A[0][2], 3);
+    EXPECT_EQ(A[1][1], 4);
+    EXPECT_EQ(A[1][2], 5);
+    EXPECT_EQ(A[2][2], 6);
+    EXPECT_EQ(A[1][0], 0);
+    EXPECT_EQ(A[2][0], 0);
+    EXPECT_EQ(A[2][1], 0);
+}
+
+TEST(TriangleMatrix, InputNonZeroBelowDiagonalThrows) {
+    TriangleMatrix<int> A(3);
+    std::istringstream is("1 2 3  7 4 5  0 0 6");
+    EXPECT_THROW(is >> A, std::invalid_argument);
+}
+
+TEST(TriangleMatrix, InputThrowKeepsOriginalMatrix) {
+    auto A = make5();
+    std::istringstream is("1 1 1 1 1  1 1 1 1 1  1 1 1 1 1  1 1 1 1 1  1 1 1 1 1");
+    EXPECT_THROW(is >> A, std::invalid_argument);
+    EXPECT_EQ(A[0][0], 3);
+    EXPECT_EQ(A[1][3], 5);
+    EXPECT_EQ(A[4][4], 1);
+}
+
+TEST(TriangleMatrix, InputDoesNotConsumeExtraValues) {
+    TriangleMatrix<int> A(2);
+    std::istringstream is("1 2 0 3 99");
+    is >> A;
+    EXPECT_FALSE(is.fail());
+    int rest;
+    is >> rest;
+    EXPECT_EQ(rest, 99);
+}
+
+TEST(TriangleMatrix, InputNotEnoughDataSetsFail) {
+    TriangleMatrix<int> A(3);
+    std::istringstream is("1 2 3 0 4 5 0 0");   // 8 из 9
+    is >> A;
+    EXPECT_TRUE(is.fail());
+}
+
+TEST(TriangleMatrix, InputKeepsTriangleShape) {
+    TriangleMatrix<int> A(3);
+    std::istringstream is("1 2 3 0 4 5 0 0 6");
+    is >> A;
+    for (size_t i = 0; i < 3; ++i)
+        EXPECT_EQ(A[i].size(), 3 - i);
+}
+
+TEST(TriangleMatrix, InputThenOutput) {
+    TriangleMatrix<int> A(2);
+    std::istringstream is("1 2 0 3");
+    is >> A;
+    std::ostringstream os;
+    os << A;
+    EXPECT_EQ(os.str(), "[ 1 2 ]\n[ 0 3 ]");
+}
+
+TEST(TriangleMatrix, OutputInputRoundTrip) {
+    auto A = make5();
+    std::ostringstream os;
+    os << A;
+
+    std::string text = os.str();
+    for (char& c : text) if (c == '[' || c == ']') c = ' ';
+
+    TriangleMatrix<int> B(5);
+    std::istringstream is(text);
+    is >> B;
+    EXPECT_FALSE(is.fail());
+    for (size_t i = 0; i < 5; ++i)
+        for (size_t j = 0; j < 5; ++j)
+            EXPECT_EQ(A[i][j], B[i][j]);
+}
+
