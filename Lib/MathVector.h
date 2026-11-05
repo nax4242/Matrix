@@ -42,8 +42,6 @@ public:
 
 	template <typename T>
 	friend std::istream& operator>>(std::istream& is, MathVector<T>& v);
-
-	inline size_t size() const noexcept;
 };
 
 template <typename T>
@@ -71,10 +69,6 @@ inline size_t MathVector<T>::start_index() const noexcept {
 	return _start_index;
 }
 
-template <typename T>
-inline size_t MathVector<T>::size() const noexcept { 
-	return Vector<T>::size();
-}
 
 template <typename T>
 MathVector<T>::MathVector(size_t size, T* data, size_t start_index) : Vector<T>(data, size), _start_index(start_index) {
